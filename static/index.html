@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Lens - Real-Time Stock Market Insights</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📈 Market Lens</h1>
+            <p class="tagline">Get real stock prices, personalized alerts, and detailed company information</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Stock Price Lookup Section -->
+        <section class="card">
+            <h2>🔍 Real-Time Stock Prices</h2>
+            <div class="search-box">
+                <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL, GOOGL, MSFT)" />
+                <button onclick="searchStock()">Get Price</button>
+            </div>
+            <div id="stockResult" class="result-box"></div>
+        </section>
+
+        <!-- Company Information Section -->
+        <section class="card">
+            <h2>🏢 Company Information</h2>
+            <div class="search-box">
+                <input type="text" id="companySymbol" placeholder="Enter stock symbol for company details" />
+                <button onclick="getCompanyInfo()">Get Details</button>
+            </div>
+            <div id="companyResult" class="result-box"></div>
+        </section>
+
+        <!-- Alerts Management Section -->
+        <section class="card">
+            <h2>🔔 Price Alerts</h2>
+            <div class="alert-form">
+                <input type="text" id="alertSymbol" placeholder="Stock Symbol" />
+                <select id="alertCondition">
+                    <option value="above">Price Above</option>
+                    <option value="below">Price Below</option>
+                </select>
+                <input type="number" id="alertPrice" placeholder="Target Price" step="0.01" />
+                <button onclick="createAlert()">Create Alert</button>
+            </div>
+            <div class="alert-actions">
+                <button onclick="loadAlerts()">Refresh Alerts</button>
+                <button onclick="checkAlerts()">Check Alerts Now</button>
+            </div>
+            <div id="alertsList" class="alerts-list"></div>
+            <div id="triggeredAlerts" class="triggered-alerts"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Market Lens - Powered by Alpha Vantage API | Data may be delayed</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
