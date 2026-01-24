@@ -1,3 +1,5 @@
+Welcome to Alpha Vantage! Here is your API key: 7EXU4WFIBVD1VE07. Please record this API key at a safe place for future data access.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
