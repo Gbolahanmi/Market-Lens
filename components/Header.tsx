@@ -10,11 +10,12 @@ export const Header: React.FC = () => {
       <div className="container header-wrapper">
         <Link href="/">
           <Image
+            className="dark:invert"
             src="/logo.webp"
             alt="MarketLens Logo"
             width={32}
             height={32}
-            className=" bg-red-800"
+            // className=" bg-red-800"
           />
         </Link>
         <nav className="hidden sm:block ">
