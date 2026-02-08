@@ -13,16 +13,18 @@ import {
 import { useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
 import NavItems from "./NavItems";
+import { signOut } from "@/lib/actions/auth.actions";
 
-export function UserDropdown() {
+export function UserDropdown({
+  user,
+}: {
+  user: { id: string; email: string; name: string };
+}) {
   const router = useRouter();
-  const handleLogout = () => {
-    // Implement your logout logic here
-    // For example, clear user session, tokens, etc.
-    // After logout, redirect to the homepage or login page
-    router.push("/sign-in");
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/signin");
   };
-  const user = { name: "John Doe", email: "john.doe@example.com" }; // Replace with actual user data
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -36,10 +38,13 @@ export function UserDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="text-gray-400" align="center">
         <DropdownMenuLabel>
-          {" "}
-          <Avatar name={user.name} size="md" />{" "}
-          <span className="text-base text-gray-400">{user.name}</span>
-          <span className="text-sm text-gray-500 block">{user.email}</span>
+          <div className="flex relative items-center gap-3 py-2">
+            <Avatar name={user.name} size="md" />{" "}
+            <div className="flex flex-col leading-tight">
+              <span className="text-base text-gray-400">{user.name}</span>
+              <span className="text-sm text-gray-500 block">{user.email}</span>
+            </div>
+          </div>{" "}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-gray-600" />
         <DropdownMenuItem

@@ -8,9 +8,11 @@ import { signInWithEmail, signUpWithEmail } from "@/lib/actions/auth.actions";
 import { toast } from "sonner";
 // import { signInEmail } from "better-auth/api";
 import { useRouter } from "next/navigation";
+import { useNotification } from "@/hooks/useNotification";
 
 const SignIn = () => {
   const router = useRouter();
+  const notify = useNotification();
   const {
     register,
     handleSubmit,
@@ -25,13 +27,14 @@ const SignIn = () => {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
-      //   const result = await signInWithEmail(data);
-      //   if (result.success) router.push("/");
+      const result = await signInWithEmail(data);
+      if (result.success) router.push("/");
     } catch (e) {
-      //   console.error(e);
-      //   toast.error("Sign in failed", {
-      //     description: e instanceof Error ? e.message : "Failed to sign in.",
-      //   });
+      console.error(e);
+      notify.error(
+        "Sign in failed",
+        e instanceof Error ? e.message : "Failed to sign in.",
+      );
     }
   };
 

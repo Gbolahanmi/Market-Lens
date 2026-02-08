@@ -1,6 +1,12 @@
 import React, { FormEvent } from "react";
 import { Controller } from "react-hook-form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const SelectField = ({
   name,
@@ -37,12 +43,11 @@ const SelectField = ({
                   {option.label}
                 </SelectItem>
               ))}
-            </  SelectContent>
+            </SelectContent>
             {error && <p className="text-sm text-red-500">{error.message}</p>}
           </Select>
         )}
       />
-      <input type="submit" />
     </div>
   );
 };

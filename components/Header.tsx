@@ -4,7 +4,9 @@ import React from "react";
 import NavItems from "./NavItems";
 import { UserDropdown } from "./UserDropdown";
 
-export const Header: React.FC = () => {
+export const Header: React.FC<{
+  user: { id: string; email: string; name: string };
+}> = ({ user }) => {
   return (
     <header className="sticky top-0 header">
       <div className="container header-wrapper">
@@ -22,7 +24,7 @@ export const Header: React.FC = () => {
           <NavItems />
         </nav>
         {/* userDropdown */}
-        <UserDropdown />
+        <UserDropdown user={user} />
       </div>
     </header>
   );
