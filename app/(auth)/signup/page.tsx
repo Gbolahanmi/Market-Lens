@@ -41,7 +41,14 @@ const SignUp = () => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const result = await signUpWithEmail(data);
-      if (result.success) router.push("/");
+      if (result.success) {
+        notify.success(
+          "Account created!",
+          "Welcome to MarketLens. Let's personalize your experience.",
+        );
+        // Redirect to home after successful signup with verified email
+        router.push("/");
+      }
     } catch (e) {
       console.error(e);
       notify.error(
