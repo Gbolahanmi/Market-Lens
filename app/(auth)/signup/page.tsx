@@ -41,7 +41,15 @@ const SignUp = () => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const result = await signUpWithEmail(data);
-      if (result.success) router.push("/");
+      if (result.success) {
+        notify.success(
+          "Account created!",
+          "Welcome to MarketLens. Let's personalize your experience.",
+        );
+        // Redirect to home after successful signup with verified email
+        router.push("/");
+      }  else {
+        notify.error("Sign up failed", result.error ?? "Something went wrong.");}
     } catch (e) {
       console.error(e);
       notify.error(
@@ -68,7 +76,7 @@ const SignUp = () => {
         <InputField
           name="email"
           label="Email"
-          placeholder="contact@jsmastery.com"
+          placeholder="contact@gmail.com"
           register={register}
           error={errors.email}
           validation={{
