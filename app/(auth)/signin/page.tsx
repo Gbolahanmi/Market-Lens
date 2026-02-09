@@ -26,9 +26,12 @@ const SignIn = () => {
   const onSubmit = async (data: SignInFormData) => {
     try {
       const result = await signInWithEmail(data);
-      if (result.success)
+      if (result.success) {
         notify.success("Welcome back!", "You have successfully signed in.");
-      router.push("/");
+        router.push("/");
+      } else {
+        notify.error("Sign in failed", result.error ?? "Invalid credentials.");
+      }
     } catch (e) {
       console.error(e);
       notify.error(
