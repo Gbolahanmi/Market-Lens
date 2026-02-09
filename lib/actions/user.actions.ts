@@ -23,11 +23,10 @@ export async function getAllUsersForEmail() {
       .map((user) => ({
         email: user.email,
         name: user.name,
-        id: user._id || user._id.toString() || "",
+        id: user._id?.toString() ?? "",
       })); // Ensure we only return users with an email
   } catch (error) {
     console.error("Error fetching users for email:", error);
     throw new Error("Failed to fetch users");
-    return [];
   }
 }

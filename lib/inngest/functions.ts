@@ -11,8 +11,6 @@ export const sendSignUpEmail = inngest.createFunction(
   { id: "send-signup-email" },
   { event: "app/user.created" },
   async ({ event, step }) => {
-    console.log("🔔 Inngest function triggered with event data:", event.data);
-
     const userProfile = `- country: ${event.data.country}
     - Investment goals: ${event.data.investmentGoals}
     - Risk Tolerance: ${event.data.riskTolerance}
@@ -51,8 +49,6 @@ export const sendSignUpEmail = inngest.createFunction(
         data: { email, name },
       } = event;
 
-      console.log("📧 About to send email to:", email, "for user:", name);
-
       return await sendWelcomeEmail({ email, name, intro: introText });
     });
     return {
@@ -64,10 +60,7 @@ export const sendSignUpEmail = inngest.createFunction(
 
 export const sendDailyNewsSummary = inngest.createFunction(
   { id: "daily-news-summary-email" },
-  [
-    { event: "app/daily.news.summary" },
-    /* { cron: "0 18 * * *" } */ { cron: "* * * * *" },
-  ], // Every day at 6pm
+  [{ event: "app/daily.news.summary" }, { cron: "0 18 * * *" }], // Every day at 6pm
   async ({ event, step }) => {
     // Step #1: Get all users for news delivery
     const users = await step.run("get-all-users", getAllUsersForEmail);
@@ -124,24 +117,84 @@ export const sendDailyNewsSummary = inngest.createFunction(
 
         userNewsSummaries.push({ user, newsContent });
       } catch (e) {
-        console.error("Failed to summarize news for : ", user.email);
+        console.error("Failed to summarize news for user : ", e);
         userNewsSummaries.push({ user, newsContent: null });
       }
     }
 
-    // Step #4: (placeholder) Send the emails
+    // Step #4: Send the emails with per-user error handling
     await step.run("send-news-emails", async () => {
-      await Promise.all(
+      const emailResults = await Promise.allSettled(
         userNewsSummaries.map(async ({ user, newsContent }) => {
-          if (!newsContent) return false;
+          try {
+            if (!newsContent) {
+              console.warn(`⚠️ No news content for user: ${user.email}`);
+              return {
+                email: user.email,
+                success: false,
+                reason: "No news content available",
+              };
+            }
 
-          return await sendNewsSummaryEmail({
-            email: user.email,
-            date: getFormattedTodayDate(),
-            newsContent,
-          });
+            const result = await sendNewsSummaryEmail({
+              email: user.email,
+              date: getFormattedTodayDate(),
+              newsContent,
+            });
+
+            return {
+              email: user.email,
+              success: true,
+              result,
+            };
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            console.error(
+              `❌ Failed to send news email to ${user.email}:`,
+              errorMessage,
+            );
+
+            return {
+              email: user.email,
+              success: false,
+              reason: errorMessage,
+            };
+          }
         }),
       );
+
+      // Log summary of email results
+      const successCount = emailResults.filter(
+        (r) => r.status === "fulfilled" && r.value.success,
+      ).length;
+      const failureCount = emailResults.filter(
+        (r) =>
+          r.status === "rejected" ||
+          (r.status === "fulfilled" && !r.value.success),
+      ).length;
+
+      console.log(
+        `📊 Email sending summary: ${successCount} succeeded, ${failureCount} failed`,
+      );
+
+      // Log individual failures for debugging
+      emailResults.forEach((result) => {
+        if (result.status === "rejected") {
+          console.error("❌ Email promise rejected:", result.reason);
+        } else if (!result.value.success) {
+          console.warn(
+            `⚠️ Email send failed for ${result.value.email}: ${result.value.reason}`,
+          );
+        }
+      });
+
+      return {
+        totalAttempted: emailResults.length,
+        successful: successCount,
+        failed: failureCount,
+        results: emailResults,
+      };
     });
 
     return {

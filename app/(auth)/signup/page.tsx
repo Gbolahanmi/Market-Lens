@@ -48,7 +48,8 @@ const SignUp = () => {
         );
         // Redirect to home after successful signup with verified email
         router.push("/");
-      }
+      }  else {
+        notify.error("Sign up failed", result.error ?? "Something went wrong.");}
     } catch (e) {
       console.error(e);
       notify.error(

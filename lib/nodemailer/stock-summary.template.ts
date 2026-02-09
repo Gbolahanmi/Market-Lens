@@ -97,7 +97,7 @@ export const STOCK_SUMMARY_EMAIL_TEMPLATE = `<!DOCTYPE html>
                                     This is an automated summary from MarketLens
                                 </p>
                                 <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #6b7280;">
-                                    © 2025 MarketLens. All rights reserved.
+                                    © 2026 MarketLens. All rights reserved.
                                 </p>
                             </div>
                         </td>

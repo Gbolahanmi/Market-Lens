@@ -1,6 +1,6 @@
 "use server";
 
-import { Watchlist } from "@/database/models/watchlisit.models";
+import { Watchlist } from "@/database/models/watchlist.models";
 import dbConnect from "@/database/mongoose";
 
 export async function getWatchlistSymbolsByEmail(
