@@ -36,16 +36,6 @@ function TradingViewWidget({
           className="tradingview-widget-container__widget"
           style={{ height, width: "100%" }}
         ></div>
-        <div className="tradingview-widget-copyright">
-          <a
-            href="https://www.tradingview.com/symbols/NASDAQ-AAPL/"
-            rel="noopener nofollow"
-            target="_blank"
-          >
-            <span className="blue-text">AAPL stock chart</span>
-          </a>
-          <span className="trademark"> by TradingView</span>
-        </div>
       </div>
     </div>
   );

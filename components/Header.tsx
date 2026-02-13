@@ -3,10 +3,15 @@ import Link from "next/link";
 import React from "react";
 import NavItems from "./NavItems";
 import { UserDropdown } from "./UserDropdown";
+import SearchCommand from "./SearchCommand";
+import { searchStocks } from "@/lib/actions/finnhub.actions";
 
-export const Header: React.FC<{
+export async function Header({
+  user,
+}: {
   user: { id: string; email: string; name: string };
-}> = ({ user }) => {
+}) {
+  const initialStocks = await searchStocks();
   return (
     <header className="sticky top-0 header">
       <div className="container header-wrapper">
@@ -21,13 +26,13 @@ export const Header: React.FC<{
         </Link>
         <nav className="hidden sm:block ">
           {/* NavItem */}
-          <NavItems />
+          <NavItems initialStocks={initialStocks} />
         </nav>
         {/* userDropdown */}
-        <UserDropdown user={user} />
+        <UserDropdown user={user} initialStocks={initialStocks} />
       </div>
     </header>
   );
-};
+}
 
 export default Header;
