@@ -11,19 +11,27 @@ export const metadata: Metadata = {
 };
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const session = await (
-    await auth
-  ).api.getSession({ headers: await headers() });
+  let user;
 
-  if (!session) {
+  try {
+    const session = await (
+      await auth
+    ).api.getSession({ headers: await headers() });
+
+    if (!session) {
+      redirect("/signin");
+    }
+
+    user = {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+    };
+  } catch (error) {
+    console.error("❌ Layout error:", error);
+    // Redirect to signin on any auth error
     redirect("/signin");
   }
-
-  const user = {
-    id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-  };
 
   return (
     <main className="min-h-screen text-gray-400">

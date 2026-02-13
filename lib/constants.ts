@@ -41,7 +41,7 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
   colorTheme: "dark", // dark mode
   dateRange: "12M", // last 12 months
   locale: "en", // language
-  largeChartUrl: "", // link to a large chart if needed
+  largeChartUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`, // route symbol clicks to internal stock details page
   isTransparent: true, // makes background transparent
   showFloatingTooltip: true, // show tooltip on hover
   plotLineColorGrowing: "#0FEDBE", // line color when price goes up
@@ -87,7 +87,7 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
       ],
     },
   ],
-  support_host: "https://www.tradingview.com", // TradingView host
+  support_host: "http://localhost:3000", // TradingView host
   backgroundColor: "#141414", // background color
   width: "100%", // full width
   height: 600, // height in px
@@ -102,7 +102,7 @@ export const HEATMAP_WIDGET_CONFIG = {
   grouping: "sector",
   isTransparent: true,
   locale: "en",
-  symbolUrl: "",
+  symbolUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`,
   colorTheme: "dark",
   exchanges: [],
   hasTopBar: false,
@@ -127,6 +127,7 @@ export const TOP_STORIES_WIDGET_CONFIG = {
 
 export const MARKET_DATA_WIDGET_CONFIG = {
   title: "Stocks",
+  largeChartUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`,
   width: "100%",
   height: 600,
   locale: "en",
@@ -203,6 +204,45 @@ export const CANDLE_CHART_WIDGET_CONFIG = (symbol: string) => ({
   studies: [],
   width: "100%",
   height: 600,
+});
+
+export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (symbol: string) => ({
+  lineWidth: 2,
+  lineType: 0,
+  chartType: "area",
+  fontColor: "rgb(106, 109, 120)",
+  gridLineColor: "rgba(242, 242, 242, 0.06)",
+  volumeUpColor: "rgba(34, 171, 148, 0.5)",
+  volumeDownColor: "rgba(247, 82, 95, 0.5)",
+  backgroundColor: "#0F0F0F",
+  widgetFontColor: "#DBDBDB",
+  upColor: "#22ab94",
+  downColor: "#f7525f",
+  borderUpColor: "#22ab94",
+  borderDownColor: "#f7525f",
+  wickUpColor: "#22ab94",
+  wickDownColor: "#f7525f",
+  colorTheme: "dark",
+  isTransparent: false,
+  locale: "en",
+  chartOnly: false,
+  scalePosition: "right",
+  scaleMode: "Normal",
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+  valuesTracking: "1",
+  changeMode: "price-and-percent",
+  symbols: [[symbol.toUpperCase(), `NASDAQ:${symbol.toUpperCase()}|1D`]],
+  dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
+  fontSize: "10",
+  headerFontSize: "medium",
+  autosize: true,
+  width: "100%",
+  height: 600,
+  noTimeScale: false,
+  hideDateRanges: false,
+  hideMarketStatus: false,
+  hideSymbolLogo: false,
 });
 
 export const BASELINE_WIDGET_CONFIG = (symbol: string) => ({

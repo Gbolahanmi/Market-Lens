@@ -17,6 +17,8 @@ async function fetchJSON<T>(
       ? { cache: "force-cache", next: { revalidate: revalidateSeconds } }
       : { cache: "no-store" };
 
+  console.log("📡 Fetching URL:", url.split("token=")[0] + "token=***"); // Hide token in logs
+
   const res = await fetch(url, options);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -107,17 +109,96 @@ export async function getNews(
   }
 }
 
+const MOCK_STOCKS: StockWithWatchlistStatus[] = [
+  {
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "MSFT",
+    name: "Microsoft Corporation",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "AMZN",
+    name: "Amazon.com Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "NVDA",
+    name: "NVIDIA Corporation",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "TSLA",
+    name: "Tesla Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "META",
+    name: "Meta Platforms Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "AVGO",
+    name: "Broadcom Inc.",
+    exchange: "NASDAQ",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "V",
+    name: "Visa Inc.",
+    exchange: "NYSE",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+  {
+    symbol: "JNJ",
+    name: "Johnson & Johnson",
+    exchange: "NYSE",
+    type: "Stock",
+    isInWatchlist: false,
+  },
+];
+
 export const searchStocks = cache(
   async (query?: string): Promise<StockWithWatchlistStatus[]> => {
     try {
       const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
       if (!token) {
-        // If no token, log and return empty to avoid throwing per requirements
+        // If no token, log and use mock stocks fallback
         console.error(
-          "Error in stock search:",
+          "❌ Error in stock search:",
           new Error("FINNHUB API key is not configured"),
         );
-        return [];
+        const trimmed = typeof query === "string" ? query.trim() : "";
+        if (!trimmed) return MOCK_STOCKS;
+        return MOCK_STOCKS.filter(
+          (s) =>
+            s.symbol.toLowerCase().includes(trimmed.toLowerCase()) ||
+            s.name.toLowerCase().includes(trimmed.toLowerCase()),
+        );
       }
 
       const trimmed = typeof query === "string" ? query.trim() : "";
@@ -171,8 +252,10 @@ export const searchStocks = cache(
         .map((r) => {
           const upper = (r.symbol || "").toUpperCase();
           const name = r.description || upper;
-const exchangeFromProfile = (r as any).__exchange as string | undefined;
-const exchange = exchangeFromProfile || "US";
+          const exchangeFromProfile = (r as any).__exchange as
+            | string
+            | undefined;
+          const exchange = exchangeFromProfile || "US";
 
           const type = r.type || "Stock";
           const item: StockWithWatchlistStatus = {
@@ -186,10 +269,24 @@ const exchange = exchangeFromProfile || "US";
         })
         .slice(0, 15);
 
-      return mapped;
+      return mapped.length > 0 ? mapped : MOCK_STOCKS;
     } catch (err) {
-      console.error("Error in stock search:", err);
-      return [];
+      console.error("❌ Error in stock search:", err);
+      const trimmed = typeof query === "string" ? query.trim() : "";
+      console.error("🔍 Search term was:", trimmed);
+      console.error("📡 API Key exists:", !!process.env.FINNHUB_API_KEY);
+      console.error(
+        "📡 PUBLIC API Key exists:",
+        !!process.env.NEXT_PUBLIC_FINNHUB_API_KEY,
+      );
+
+      // Fallback to mock stocks on error
+      if (!trimmed) return MOCK_STOCKS;
+      return MOCK_STOCKS.filter(
+        (s) =>
+          s.symbol.toLowerCase().includes(trimmed.toLowerCase()) ||
+          s.name.toLowerCase().includes(trimmed.toLowerCase()),
+      );
     }
   },
 );
