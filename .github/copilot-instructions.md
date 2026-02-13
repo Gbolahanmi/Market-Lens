@@ -27,7 +27,7 @@
 ### 2. **Authentication Flow**
 
 - Better Auth with `requireEmailVerification: true` in `lib/better-auth/Auth.ts`
-- Middleware in `midlleware/index.ts` checks session cookies, redirects to home if missing
+- **Next.js 16**: Route protection via `middleware.ts` (or legacy `proxy.ts`) - checks session cookies, redirects to home if missing
 - Sign-up triggers Inngest event `"app/user.created"` for welcome email (see `lib/inngest/functions.ts`)
 - Key pattern: Check `response.user.emailVerified` after signup to conditionally redirect users
 

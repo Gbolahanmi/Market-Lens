@@ -12,26 +12,26 @@ export const metadata: Metadata = {
 
 export default async function Layout({ children }: { children: ReactNode }) {
   let user;
+  let session;
 
   try {
-    const session = await (
+    session = await (
       await auth
     ).api.getSession({ headers: await headers() });
-
-    if (!session) {
-      redirect("/signin");
-    }
-
-    user = {
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
-    };
   } catch (error) {
-    console.error("❌ Layout error:", error);
-    // Redirect to signin on any auth error
+    console.error("❌ Layout error fetching session:", error);
     redirect("/signin");
   }
+
+  if (!session) {
+    redirect("/signin");
+  }
+
+  user = {
+    id: session.user.id,
+    email: session.user.email,
+    name: session.user.name,
+  };
 
   return (
     <main className="min-h-screen text-gray-400">

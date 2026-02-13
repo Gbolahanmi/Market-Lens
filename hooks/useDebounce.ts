@@ -38,15 +38,30 @@ export function useDebounce<T extends (...args: any[]) => void>(
   delay: number,
 ): (...args: Parameters<T>) => void {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const funcRef = useRef(func);
+
+  useEffect(() => {
+    funcRef.current = func;
+  }, [func]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+
   return useCallback(
     (...args: Parameters<T>) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
-        func(...args);
+        funcRef.current(...args);
       }, delay);
     },
-    [func, delay],
+    [delay],
   );
 }

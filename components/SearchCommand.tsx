@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Command,
   CommandEmpty,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Star, TrendingUp } from "lucide-react";
-import Link from "next/link";
 import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -20,6 +20,7 @@ export default function SearchCommand({
   label = "Search Stocks",
   initialStocks = [],
 }: SearchCommandProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,7 +65,7 @@ export default function SearchCommand({
     setOpen(false);
     setSearchTerm("");
     setStocks(initialStocks);
-  };
+    router.push(`/stocks/${symbol}`);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,7 +101,6 @@ export default function SearchCommand({
               placeholder="Search stocks..."
               value={searchTerm}
               onValueChange={setSearchTerm}
-              disabled={loading}
               className=""
             />
             {loading && <Loader2 className="search-loader" />}
@@ -124,19 +124,14 @@ export default function SearchCommand({
                       onSelect={() => handleSelectStock(stock.symbol)}
                       className="cursor-pointer search-item"
                     >
-                      <Link
-                        href={`/stocks/${stock.symbol}`}
-                        className="search-item-link"
-                      >
-                        <TrendingUp className="h-4 w-4 text-gray-500" />
-                        <div className="flex-1">
-                          <div className="search-item-name">{stock.name}</div>
-                          <div className="text-sm text-gray-500">
-                            {stock.symbol} | {stock.exchange} | {stock.type}
-                          </div>
+                      <TrendingUp className="h-4 w-4 text-gray-500" />
+                      <div className="flex-1">
+                        <div className="search-item-name">{stock.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {stock.symbol} | {stock.exchange} | {stock.type}
                         </div>
-                        <Star className="h-4 w-4 text-yellow-500" />
-                      </Link>
+                      </div>
+                      <Star className="h-4 w-4 text-yellow-500" />
                     </CommandItem>
                   ))}
                 </CommandGroup>

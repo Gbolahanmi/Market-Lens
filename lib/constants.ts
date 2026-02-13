@@ -87,7 +87,7 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
       ],
     },
   ],
-  support_host: "http://localhost:3000", // TradingView host
+  support_host: process.env.NEXT_PUBLIC_BASE_URL || process.env.SUPPORT_HOST || "http://localhost:3000", // TradingView host - uses env config
   backgroundColor: "#141414", // background color
   width: "100%", // full width
   height: 600, // height in px
@@ -206,7 +206,7 @@ export const CANDLE_CHART_WIDGET_CONFIG = (symbol: string) => ({
   height: 600,
 });
 
-export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (symbol: string) => ({
+export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (symbol: string, exchange: string = "NASDAQ") => ({
   lineWidth: 2,
   lineType: 0,
   chartType: "area",
@@ -232,7 +232,7 @@ export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (symbol: string) => ({
     "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
   valuesTracking: "1",
   changeMode: "price-and-percent",
-  symbols: [[symbol.toUpperCase(), `NASDAQ:${symbol.toUpperCase()}|1D`]],
+  symbols: [[symbol.toUpperCase(), `${exchange}:${symbol.toUpperCase()}|1D`]],
   dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
   fontSize: "10",
   headerFontSize: "medium",
