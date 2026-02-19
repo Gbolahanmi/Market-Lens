@@ -2,27 +2,61 @@
 
 import { useState } from "react";
 import { Star, Trash2 } from "lucide-react";
+import {
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/lib/actions/watchlist.actions";
+import { useNotification } from "@/hooks/useNotification";
+
+interface WatchlistButtonProps {
+  symbol: string;
+  company: string;
+  isInWatchlist?: boolean;
+  showTrashIcon?: boolean;
+  type?: "button" | "icon";
+  onUpdate?: () => void;
+}
 
 export default function WatchlistButton({
   symbol,
   company,
-  isInWatchlist,
+  isInWatchlist = false,
   showTrashIcon = false,
   type = "button",
+  onUpdate,
 }: WatchlistButtonProps) {
   const [inWatchlist, setInWatchlist] = useState(isInWatchlist);
   const [loading, setLoading] = useState(false);
+  const notification = useNotification();
 
   const handleToggleWatchlist = async () => {
     setLoading(true);
     try {
-      // TODO: Call your watchlist action here
-      console.log(
-        `${inWatchlist ? "Removing" : "Adding"} ${symbol} to watchlist`,
-      );
-      setInWatchlist(!inWatchlist);
+      if (inWatchlist) {
+        // Remove from watchlist
+        const { error } = await removeFromWatchlist(symbol);
+        if (error) {
+          notification.error("Failed to remove from watchlist", error);
+          return;
+        }
+        setInWatchlist(false);
+        notification.success("Removed from watchlist");
+      } else {
+        // Add to watchlist
+        const { error } = await addToWatchlist(symbol, company);
+        if (error) {
+          notification.error("Failed to add to watchlist", error);
+          return;
+        }
+        setInWatchlist(true);
+        notification.success("Added to watchlist");
+      }
+
+      // Call parent update callback
+      onUpdate?.();
     } catch (error) {
-      console.error("Error toggling watchlist:", error);
+      console.error("❌ Error toggling watchlist:", error);
+      notification.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -71,12 +105,12 @@ export default function WatchlistButton({
     >
       {inWatchlist ? (
         <>
-          <Star className="inline h-4 w-4 mr-2 fill-current" />
+          <Star className="inline h-5 w-5 mr-2 fill-current" />
           In Watchlist
         </>
       ) : (
         <>
-          <Star className="inline h-4 w-4 mr-2" />
+          <Star className="inline h-5 w-5 mr-2" />
           Add to Watchlist
         </>
       )}
