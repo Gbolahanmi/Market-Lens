@@ -87,7 +87,10 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
       ],
     },
   ],
-  support_host: process.env.NEXT_PUBLIC_BASE_URL || process.env.SUPPORT_HOST || "http://localhost:3000", // TradingView host - uses env config
+  support_host:
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    process.env.SUPPORT_HOST ||
+    "http://localhost:3000", // TradingView host - uses env config
   backgroundColor: "#141414", // background color
   width: "100%", // full width
   height: 600, // height in px
@@ -206,7 +209,10 @@ export const CANDLE_CHART_WIDGET_CONFIG = (symbol: string) => ({
   height: 600,
 });
 
-export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (symbol: string, exchange: string = "NASDAQ") => ({
+export const SYMBOL_OVERVIEW_WIDGET_CONFIG = (
+  symbol: string,
+  exchange: string = "NASDAQ",
+) => ({
   lineWidth: 2,
   lineType: 0,
   chartType: "area",

@@ -1,3 +1,5 @@
+"use client";
+
 import TradingViewWidget from "@/components/tradingViewWidget";
 import {
   MARKET_OVERVIEW_WIDGET_CONFIG,

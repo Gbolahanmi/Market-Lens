@@ -15,9 +15,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
   let session;
 
   try {
-    session = await (
-      await auth
-    ).api.getSession({ headers: await headers() });
+    session = await (await auth).api.getSession({ headers: await headers() });
   } catch (error) {
     console.error("❌ Layout error fetching session:", error);
     redirect("/signin");
@@ -36,7 +34,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen text-gray-400">
       <Header user={user} />
-      <div className="container py-10 mx-auto">{children}</div>
+      <div className="container py-10 dark:bg-black mx-auto">{children}</div>
     </main>
   );
 }

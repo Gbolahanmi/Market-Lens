@@ -35,7 +35,7 @@ export function UserDropdown({
           size="icon"
           className="rounded-full gap-3 text-gray-400 hover:text-yellow-400"
         >
-          <Avatar name={user.name} size="sm" />{" "}
+          <Avatar name={user.name} size="md" />{" "}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="text-gray-400" align="center">

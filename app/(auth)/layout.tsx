@@ -5,12 +5,32 @@ import { redirect } from "next/navigation";
 import { Star } from "lucide-react";
 import { auth } from "@/lib/better-auth/Auth";
 
-const Layout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await (
-    await auth
-  ).api.getSession({ headers: await headers() });
+// Timeout helper for async operations
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const timeout = new Promise<T>((_, reject) =>
+    setTimeout(() => reject(new Error("Operation timed out")), ms),
+  );
+  return Promise.race([promise, timeout]);
+}
 
-  if (session?.user) redirect("/");
+const Layout = async ({ children }: { children: React.ReactNode }) => {
+  try {
+    // Add timeout to prevent indefinite hangs
+    const authInstance = await withTimeout(auth, 8000);
+    const session = await withTimeout(
+      authInstance.api.getSession({ headers: await headers() }),
+      5000,
+    );
+
+    if (session?.user) redirect("/");
+  } catch (error) {
+    // If auth fails, we still show the auth pages (signup/signin)
+    // This allows users to access auth pages even if DB is temporarily down
+    console.warn(
+      "⚠️ Auth check failed, proceeding with unauthenticated view:",
+      error instanceof Error ? error.message : error,
+    );
+  }
 
   return (
     <main className="auth-layout">

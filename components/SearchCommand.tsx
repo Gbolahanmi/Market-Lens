@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Star, TrendingUp } from "lucide-react";
 import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/useDebounce";
+import WatchlistButton from "./WatchlistButton";
 
 export default function SearchCommand({
   renderAs = "button",
@@ -66,6 +67,7 @@ export default function SearchCommand({
     setSearchTerm("");
     setStocks(initialStocks);
     router.push(`/stocks/${symbol}`);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,12 +128,17 @@ export default function SearchCommand({
                     >
                       <TrendingUp className="h-4 w-4 text-gray-500" />
                       <div className="flex-1">
-                        <div className="search-item-name">{stock.name}</div>
-                        <div className="text-sm text-gray-500">
-                          {stock.symbol} | {stock.exchange} | {stock.type}
-                        </div>
+                      <div className="search-item-name">{stock.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {stock.symbol} | {stock.exchange} | {stock.type}
                       </div>
-                      <Star className="h-4 w-4 text-yellow-500" />
+                      </div>
+                      <WatchlistButton
+                      symbol={stock.symbol}
+                      company={stock.name}
+                      isInWatchlist={stock.isInWatchlist ?? false}
+                      type="icon"
+                      />
                     </CommandItem>
                   ))}
                 </CommandGroup>
