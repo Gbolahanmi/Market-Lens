@@ -76,7 +76,7 @@ export default function WatchlistButton({
       >
         {showTrashIcon && inWatchlist ? (
           <Star
-            className="h-5 w-5 bg-yellow-500 hover:bg-yellow-400"
+            className="h-5 w-5  hover:bg-yellow-400 text-yellow-500"
             fill="currentColor"
           />
         ) : (
