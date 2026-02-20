@@ -26,7 +26,7 @@ export async function getAllUsersForEmail() {
         id: user._id?.toString() ?? "",
       })); // Ensure we only return users with an email
   } catch (error) {
-    console.error("Error fetching users for email:", error);
+    // console.error("Error fetching users for email:", error);
     throw new Error("Failed to fetch users");
   }
 }

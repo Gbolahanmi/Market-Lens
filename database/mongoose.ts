@@ -66,21 +66,21 @@ async function dbConnect() {
       cached.promise = mongoose
         .connect(MONGODB_URI, opts)
         .then((mongoose) => {
-          console.log("✅ MongoDB connected successfully");
+          // console.log("✅ MongoDB connected successfully");
           // Set up event listeners for connection issues
           mongoose.connection.on("disconnected", () => {
-            console.warn("⚠️ MongoDB disconnected");
+            // console.warn("⚠️ MongoDB disconnected");
           });
           mongoose.connection.on("reconnected", () => {
-            console.log("✅ MongoDB reconnected");
+            // console.log("✅ MongoDB reconnected");
           });
           mongoose.connection.on("error", (err) => {
-            console.error("❌ MongoDB error:", err.message);
+            // console.error("❌ MongoDB error:", err.message);
           });
           return mongoose;
         })
         .catch((error) => {
-          console.error("❌ MongoDB connection failed:", error.message);
+          // console.error("❌ MongoDB connection failed:", error.message);
           cached.promise = null;
           throw error;
         });
@@ -109,7 +109,7 @@ export async function dbDisconnect() {
     await cached.conn.disconnect();
     cached.conn = null;
     cached.promise = null;
-    console.log("✅ MongoDB disconnected");
+    // console.log("✅ MongoDB disconnected");
   }
 }
 

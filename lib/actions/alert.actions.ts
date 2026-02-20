@@ -25,7 +25,7 @@ export async function createAlert(
 
     await dbConnect();
 
-    console.log(`📢 Creating alert for ${symbol} (${alertType})`);
+    // console.log(`📢 Creating alert for ${symbol} (${alertType})`);
 
     // Check if alert already exists
     const existingAlert = await Alert.findOne({
@@ -53,7 +53,7 @@ export async function createAlert(
       createdAt: new Date(),
     });
 
-    console.log(`✅ Created alert for ${symbol}`);
+    // console.log(`✅ Created alert for ${symbol}`);
 
     return {
       success: true,
@@ -70,7 +70,7 @@ export async function createAlert(
       },
     };
   } catch (error) {
-    console.error(`❌ Error creating alert:`, error);
+    // console.error(`❌ Error creating alert:`, error);
     return {
       error: error instanceof Error ? error.message : "Failed to create alert",
       success: false,
@@ -115,7 +115,7 @@ export async function getUserAlerts(symbol?: string) {
       error: null,
     };
   } catch (error) {
-    console.error(`❌ Error fetching alerts:`, error);
+    // console.error(`❌ Error fetching alerts:`, error);
     return { error: "Failed to fetch alerts", data: [] };
   }
 }
@@ -134,17 +134,17 @@ export async function deleteAlert(alertId: string) {
 
     await dbConnect();
 
-    console.log(`🗑️ Deleting alert ${alertId}`);
+    // console.log(`🗑️ Deleting alert ${alertId}`);
 
     await Alert.findOneAndDelete({
       _id: alertId,
       userId: session.user.id,
     });
 
-    console.log(`✅ Deleted alert ${alertId}`);
+    // console.log(`✅ Deleted alert ${alertId}`);
     return { success: true, error: null };
   } catch (error) {
-    console.error(`❌ Error deleting alert:`, error);
+    // console.error(`❌ Error deleting alert:`, error);
     return {
       error: error instanceof Error ? error.message : "Failed to delete alert",
       success: false,
@@ -166,17 +166,17 @@ export async function updateAlertStatus(alertId: string, isActive: boolean) {
 
     await dbConnect();
 
-    console.log(`⚙️ Updating alert ${alertId} status to ${isActive}`);
+    // console.log(`⚙️ Updating alert ${alertId} status to ${isActive}`);
 
     await Alert.findOneAndUpdate(
       { _id: alertId, userId: session.user.id },
       { isActive },
     );
 
-    console.log(`✅ Updated alert ${alertId}`);
+    // console.log(`✅ Updated alert ${alertId}`);
     return { success: true, error: null };
   } catch (error) {
-    console.error(`❌ Error updating alert:`, error);
+    // console.error(`❌ Error updating alert:`, error);
     return {
       error: error instanceof Error ? error.message : "Failed to update alert",
       success: false,

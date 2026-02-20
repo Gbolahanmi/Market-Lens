@@ -17,7 +17,7 @@ async function fetchJSON<T>(
       ? { cache: "force-cache", next: { revalidate: revalidateSeconds } }
       : { cache: "no-store" };
 
-  console.log("📡 Fetching URL:", url.split("token=")[0] + "token=***"); // Hide token in logs
+  // console.log("📡 Fetching URL:", url.split("token=")[0] + "token=***"); // Hide token in logs
 
   const res = await fetch(url, options);
   if (!res.ok) {
@@ -55,7 +55,7 @@ export async function getNews(
             const articles = await fetchJSON<RawNewsArticle[]>(url, 300);
             perSymbolArticles[sym] = (articles || []).filter(validateArticle);
           } catch (e) {
-            console.error("Error fetching company news for", sym, e);
+            // console.error("Error fetching company news for", sym, e);
             perSymbolArticles[sym] = [];
           }
         }),
@@ -104,7 +104,7 @@ export async function getNews(
       .map((a, idx) => formatArticle(a, false, undefined, idx));
     return formatted;
   } catch (err) {
-    console.error("getNews error:", err);
+    // console.error("getNews error:", err);
     throw new Error("Failed to fetch news");
   }
 }
@@ -188,10 +188,10 @@ export const searchStocks = cache(
       const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
       if (!token) {
         // If no token, log and use mock stocks fallback
-        console.error(
-          "❌ Error in stock search:",
-          new Error("FINNHUB API key is not configured"),
-        );
+        // console.error(
+        //   "❌ Error in stock search:",
+        //   new Error("FINNHUB API key is not configured"),
+        // );
         const trimmed = typeof query === "string" ? query.trim() : "";
         if (!trimmed) return MOCK_STOCKS;
         return MOCK_STOCKS.filter(
@@ -216,7 +216,7 @@ export const searchStocks = cache(
               const profile = await fetchJSON<any>(url, 3600);
               return { sym, profile } as { sym: string; profile: any };
             } catch (e) {
-              console.error("Error fetching profile2 for", sym, e);
+              // console.error("Error fetching profile2 for", sym, e);
               return { sym, profile: null } as { sym: string; profile: any };
             }
           }),
@@ -271,14 +271,14 @@ export const searchStocks = cache(
 
       return mapped.length > 0 ? mapped : MOCK_STOCKS;
     } catch (err) {
-      console.error("❌ Error in stock search:", err);
+      // console.error("❌ Error in stock search:", err);
       const trimmed = typeof query === "string" ? query.trim() : "";
-      console.error("🔍 Search term was:", trimmed);
-      console.error("📡 API Key exists:", !!process.env.FINNHUB_API_KEY);
-      console.error(
-        "📡 PUBLIC API Key exists:",
-        !!process.env.NEXT_PUBLIC_FINNHUB_API_KEY,
-      );
+      // console.error("🔍 Search term was:", trimmed);
+      // console.error("📡 API Key exists:", !!process.env.FINNHUB_API_KEY);
+      // console.error(
+      //   "📡 PUBLIC API Key exists:",
+      //   !!process.env.NEXT_PUBLIC_FINNHUB_API_KEY,
+      // );
 
       // Fallback to mock stocks on error
       if (!trimmed) return MOCK_STOCKS;

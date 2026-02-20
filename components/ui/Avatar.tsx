@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface AvatarProps {
   src?: string;
   alt?: string;
@@ -64,9 +66,9 @@ export default function Avatar({
       title={name || alt || "User Avatar"}
     >
       {src ? (
-        <img
+        <Image
           src={src}
-          alt={alt || name}
+          alt={alt || name || "User Avatar"}
           className="w-full h-full object-cover"
         />
       ) : fallbackEmoji ? (

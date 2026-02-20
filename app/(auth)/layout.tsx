@@ -1,37 +1,25 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { Star } from "lucide-react";
-import { auth } from "@/lib/better-auth/Auth";
+import AuthSessionRedirect from "@/components/AuthSessionRedirect";
 
-// Timeout helper for async operations
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  const timeout = new Promise<T>((_, reject) =>
-    setTimeout(() => reject(new Error("Operation timed out")), ms),
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <>
+      <Suspense fallback={<></>}>
+        <AuthSessionRedirect />
+      </Suspense>
+      <AuthLayoutContent>{children}</AuthLayoutContent>
+    </>
   );
-  return Promise.race([promise, timeout]);
-}
+};
 
-const Layout = async ({ children }: { children: React.ReactNode }) => {
-  try {
-    // Add timeout to prevent indefinite hangs
-    const authInstance = await withTimeout(auth, 8000);
-    const session = await withTimeout(
-      authInstance.api.getSession({ headers: await headers() }),
-      5000,
-    );
-
-    if (session?.user) redirect("/");
-  } catch (error) {
-    // If auth fails, we still show the auth pages (signup/signin)
-    // This allows users to access auth pages even if DB is temporarily down
-    console.warn(
-      "⚠️ Auth check failed, proceeding with unauthenticated view:",
-      error instanceof Error ? error.message : error,
-    );
-  }
-
+function AuthLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <main className="auth-layout">
       <section className="auth-left-section scrollbar-hide-default">

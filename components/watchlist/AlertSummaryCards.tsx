@@ -70,7 +70,7 @@ export default function AlertSummaryCards({
   }
 
   return (
-    <div className="space-y-3 max-h-96 overflow-y-auto">
+    <div className="space-y-3 max-h-120 overflow-y-auto">
       {items.map((item) => {
         const priceChange = item.change || 0;
         const isPositive = priceChange >= 0;

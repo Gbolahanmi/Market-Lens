@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getUserWatchlist } from "@/lib/actions/watchlist.actions";
 import { getNews } from "@/lib/actions/finnhub.actions";
 import { getStockData } from "@/lib/actions/stock-data.actions";
+import { createArticleId } from "@/lib/utils";
 import WatchlistTable from "@/components/watchlist/WatchlistTable";
 import AlertSummaryCards from "@/components/watchlist/AlertSummaryCards";
 import NewsCards from "@/components/watchlist/NewsCards";
@@ -93,9 +94,9 @@ export default function WatchlistPage() {
 
         if (includeNews) {
           const newsData = await getNews(symbols);
-          const newsWithIds = (newsData || []).map((article) => ({
+          const newsWithIds = (newsData || []).map((article, index) => ({
             ...article,
-            id: btoa(article.headline || "").slice(0, 8),
+            id: createArticleId(article, index),
           }));
           setNews(newsWithIds);
           setArticles(newsWithIds);
@@ -133,7 +134,7 @@ export default function WatchlistPage() {
         {/* 2-Column Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           {/* Left Column - Table (2 cols wide) */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 overflow-x-auto">
             <WatchlistTable
               items={watchlistItems}
               onUpdate={handleWatchlistUpdate}

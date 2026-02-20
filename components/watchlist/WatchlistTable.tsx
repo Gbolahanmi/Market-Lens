@@ -72,6 +72,8 @@ export default function WatchlistTable({
                   company={item.company}
                   isInWatchlist={true}
                   type="icon"
+                  showTrashIcon={true}
+                  onUpdate={onUpdate}
                 />
               </td>
               <td className="px-6 py-4 text-sm font-medium text-blue-400">

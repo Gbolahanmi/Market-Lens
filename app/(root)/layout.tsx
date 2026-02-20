@@ -1,9 +1,8 @@
-import Header from "@/components/Header";
-import { auth } from "@/lib/better-auth/Auth";
+import SessionHeader from "@/components/SessionHeader";
+import SkeletonHeader from "@/components/skeletons/SkeletonHeader";
+import { NewsProvider } from "@/context/NewsContext";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "MarketLens",
@@ -11,30 +10,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  let user;
-  let session;
-
-  try {
-    session = await (await auth).api.getSession({ headers: await headers() });
-  } catch (error) {
-    console.error("❌ Layout error fetching session:", error);
-    redirect("/signin");
-  }
-
-  if (!session) {
-    redirect("/signin");
-  }
-
-  user = {
-    id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-  };
-
   return (
     <main className="min-h-screen text-gray-400">
-      <Header user={user} />
-      <div className="container py-10 dark:bg-black mx-auto">{children}</div>
+      <Suspense fallback={<SkeletonHeader />}>
+        <SessionHeader />
+      </Suspense>
+      <Suspense fallback={null}>
+        <NewsProvider>
+          <div className="container py-10 dark:bg-black mx-auto">{children}</div>
+        </NewsProvider>
+      </Suspense>
     </main>
   );
 }
