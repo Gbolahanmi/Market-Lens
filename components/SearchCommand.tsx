@@ -41,12 +41,12 @@ export default function SearchCommand({
 
     setLoading(true);
     try {
-      console.log("🔍 Searching for:", searchTerm);
+      // console.log("🔍 Searching for:", searchTerm);
       const results = await searchStocks(searchTerm.trim());
-      console.log("✅ Search results count:", results.length);
+      // console.log("✅ Search results count:", results.length);
       setStocks(results);
     } catch (error) {
-      console.error("❌ Search error:", error);
+      // console.error("❌ Search error:", error);
       setStocks([]);
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ export default function SearchCommand({
   }, [searchTerm, open]);
 
   const handleSelectStock = (symbol: string) => {
-    console.log(`Selected stock: ${symbol}`);
+    // console.log(`Selected stock: ${symbol}`);
     setOpen(false);
     setSearchTerm("");
     setStocks(initialStocks);
@@ -119,25 +119,38 @@ export default function SearchCommand({
                 <CommandGroup
                   heading={`${isSearchMode ? "Search results" : "Popular stocks"} (${displayStocks?.length || 0})`}
                 >
-                  {displayStocks?.map((stock) => (
+                  {displayStocks?.map((stock, index) => (
                     <CommandItem
-                      key={stock.symbol}
+                      key={`${stock.symbol}-${index}`}
                       value={stock.symbol}
                       onSelect={() => handleSelectStock(stock.symbol)}
                       className="cursor-pointer search-item"
                     >
                       <TrendingUp className="h-4 w-4 text-gray-500" />
                       <div className="flex-1">
-                      <div className="search-item-name">{stock.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {stock.symbol} | {stock.exchange} | {stock.type}
-                      </div>
+                        <div className="search-item-name">{stock.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {stock.symbol} | {stock.exchange} | {stock.type}
+                        </div>
                       </div>
                       <WatchlistButton
-                      symbol={stock.symbol}
-                      company={stock.name}
-                      isInWatchlist={stock.isInWatchlist ?? false}
-                      type="icon"
+                        symbol={stock.symbol}
+                        company={stock.name}
+                        isInWatchlist={stock.isInWatchlist ?? false}
+                        type="icon"
+                        onUpdate={() => {
+                          // Update the stock's watchlist status
+                          setStocks((prevStocks) =>
+                            prevStocks.map((s) =>
+                              s.symbol === stock.symbol
+                                ? {
+                                    ...s,
+                                    isInWatchlist: !s.isInWatchlist,
+                                  }
+                                : s,
+                            ),
+                          );
+                        }}
                       />
                     </CommandItem>
                   ))}

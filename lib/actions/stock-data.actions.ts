@@ -30,9 +30,7 @@ async function throttledFetch<T>(
   } catch (error: any) {
     // Handle rate limit (429) gracefully
     if (error.message?.includes("429")) {
-      console.warn(
-        "⚠️ API rate limit reached - returning null for graceful degradation",
-      );
+      // console.warn("⚠️ API rate limit reached - returning null for graceful degradation",);
       return null;
     }
     throw error;
@@ -61,7 +59,7 @@ export async function getStockData(symbols: string[]): Promise<StockData[]> {
 
     const token = FINNHUB_API_KEY;
     if (!token) {
-      console.warn("⚠️ FINNHUB_API_KEY not configured");
+      // console.warn("⚠️ FINNHUB_API_KEY not configured");
       return [];
     }
 
@@ -81,7 +79,7 @@ export async function getStockData(symbols: string[]): Promise<StockData[]> {
         }>(quoteUrl);
 
         if (!quoteData || !quoteData.c) {
-          console.warn(`⚠️ No quote data for ${symbol}`);
+          // console.warn(`⚠️ No quote data for ${symbol}`);
           continue;
         }
 
@@ -192,17 +190,17 @@ export async function getStockData(symbols: string[]): Promise<StockData[]> {
                   analyzeRating = "Strong Sell";
                 }
 
-                console.log(
-                  `📊 Analyst rating for ${symbol}: ${analyzeRating} (Score: ${score.toFixed(2)}, Buy:${strongBuy}/${buy}, Hold:${hold}, Sell:${sell}/${strongSell})`,
-                );
+                // console.log(
+                //   `📊 Analyst rating for ${symbol}: ${analyzeRating} (Score: ${score.toFixed(2)}, Buy:${strongBuy}/${buy}, Hold:${hold}, Sell:${sell}/${strongSell})`,
+                // );
               }
             }
           }
         } catch (err) {
-          console.warn(
-            `⚠️ Error fetching profile/metrics/recommendations for ${symbol}:`,
-            err,
-          );
+          // console.warn(
+          //   `⚠️ Error fetching profile/metrics/recommendations for ${symbol}:`,
+          //   err,
+          // );
         }
 
         results.push({
@@ -219,20 +217,20 @@ export async function getStockData(symbols: string[]): Promise<StockData[]> {
           logoUrl,
         });
 
-        console.log(`✅ Stock data collected for ${symbol}:`, {
-          price: quoteData.c,
-          changePercent: quoteData.dp,
-          marketCap,
-          peRatio,
-        });
+        // console.log(`✅ Stock data collected for ${symbol}:`, {
+        //   price: quoteData.c,
+        //   changePercent: quoteData.dp,
+        //   marketCap,
+        //   peRatio,
+        // });
       } catch (error) {
-        console.error(`❌ Error fetching data for ${symbol}:`, error);
+        // console.error(`❌ Error fetching data for ${symbol}:`, error);
       }
     }
 
     return results;
   } catch (error) {
-    console.error("❌ Error fetching stock data:", error);
+    // console.error("❌ Error fetching stock data:", error);
     return [];
   }
 }

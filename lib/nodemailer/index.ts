@@ -12,7 +12,15 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendWelcomeEmail = async ({ email, name, intro }) => {
+export const sendWelcomeEmail = async ({
+  email,
+  name,
+  intro,
+}: {
+  email: string;
+  name: string;
+  intro: string;
+}): Promise<void> => {
   const htmlTemplate = WELCOME_EMAIL_TEMPLATE.replace("{{name}}", name).replace(
     "{{introText}}",
     intro,

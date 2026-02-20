@@ -12,7 +12,9 @@ export default function NewsDetailsPage() {
   const { getArticleById } = useNews();
 
   const newsId = params?.id as string;
-  const article = getArticleById(newsId);
+  // Decode URL-encoded ID if needed
+  const decodedId = newsId ? decodeURIComponent(newsId) : "";
+  const article = getArticleById(decodedId);
 
   if (!article) {
     return (
@@ -31,16 +33,26 @@ export default function NewsDetailsPage() {
             <h2 className="text-2xl font-bold text-gray-100 mb-2">
               Article Not Found
             </h2>
-            <p className="text-gray-400 mb-6">
-              The news article you're looking for isn't available. Please go
-              back and try again.
+            <p className="text-gray-400 mb-4">
+              The news article you're looking for isn't available in cache. Try
+              going back or searching again.
             </p>
-            <Button
-              onClick={() => router.back()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Return to Watchlist
-            </Button>
+            <p className="text-gray-500 text-sm mb-6">(ID: {decodedId})</p>
+            <div className="flex gap-4 justify-center">
+              <Button
+                onClick={() => router.back()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Go Back
+              </Button>
+              <Button
+                onClick={() => router.push("/watchlist")}
+                variant="outline"
+                className="border-gray-600 text-gray-200 hover:bg-gray-700"
+              >
+                Return to Watchlist
+              </Button>
+            </div>
           </div>
         </div>
       </div>

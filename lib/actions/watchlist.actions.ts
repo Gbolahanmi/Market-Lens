@@ -28,7 +28,7 @@ export async function getWatchlistSymbolsByEmail(
     const items = await Watchlist.find({ userId }, { symbol: 1 }).lean();
     return items.map((i) => String(i.symbol));
   } catch (err) {
-    console.error("getWatchlistSymbolsByEmail error:", err);
+    // console.error("getWatchlistSymbolsByEmail error:", err);
     return [];
   }
 }
@@ -64,7 +64,7 @@ export async function getUserWatchlist() {
       error: null,
     };
   } catch (error) {
-    console.error("❌ Error fetching watchlist:", error);
+    // console.error("❌ Error fetching watchlist:", error);
     return { error: "Failed to fetch watchlist", data: [] };
   }
 }
@@ -83,7 +83,7 @@ export async function addToWatchlist(symbol: string, company: string) {
 
     await dbConnect();
 
-    console.log(`📌 Adding ${symbol} to watchlist for user ${session.user.id}`);
+    // console.log(`📌 Adding ${symbol} to watchlist for user ${session.user.id}`);
 
     const result = await Watchlist.findOneAndUpdate(
       { userId: session.user.id, symbol: symbol.toUpperCase() },
@@ -96,7 +96,7 @@ export async function addToWatchlist(symbol: string, company: string) {
       { upsert: true, new: true },
     );
 
-    console.log(`✅ Added ${symbol} to watchlist`);
+    // console.log(`✅ Added ${symbol} to watchlist`);
     return {
       success: true,
       error: null,
@@ -109,7 +109,7 @@ export async function addToWatchlist(symbol: string, company: string) {
       },
     };
   } catch (error) {
-    console.error(`❌ Error adding ${symbol} to watchlist:`, error);
+    // console.error(`❌ Error adding ${symbol} to watchlist:`, error);
     return {
       error:
         error instanceof Error ? error.message : "Failed to add to watchlist",
@@ -133,19 +133,19 @@ export async function removeFromWatchlist(symbol: string) {
 
     await dbConnect();
 
-    console.log(
-      `🗑️ Removing ${symbol} from watchlist for user ${session.user.id}`,
-    );
+    // console.log(
+    //   `🗑️ Removing ${symbol} from watchlist for user ${session.user.id}`,
+    // );
 
     await Watchlist.deleteOne({
       userId: session.user.id,
       symbol: symbol.toUpperCase(),
     });
 
-    console.log(`✅ Removed ${symbol} from watchlist`);
+    // console.log(`✅ Removed ${symbol} from watchlist`);
     return { success: true, error: null };
   } catch (error) {
-    console.error(`❌ Error removing ${symbol} from watchlist:`, error);
+    // console.error(`❌ Error removing ${symbol} from watchlist:`, error);
     return {
       error:
         error instanceof Error

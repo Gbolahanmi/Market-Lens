@@ -44,11 +44,11 @@ export const getAuth = async () => {
         ],
       });
 
-      console.log("✅ Better Auth initialized successfully");
+      // console.log("✅ Better Auth initialized successfully");
       return authInstance;
     } catch (error) {
       authPromise = null;
-      console.error("❌ Failed to initialize Better Auth:", error);
+      // console.error("❌ Failed to initialize Better Auth:", error);
       throw error;
     }
   })();

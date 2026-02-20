@@ -16,7 +16,7 @@ async function fetchJSON<T>(url: string): Promise<T | null> {
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch (error) {
-    console.error("❌ Fetch error:", error);
+    // console.error("❌ Fetch error:", error);
     return null;
   }
 }
@@ -415,7 +415,7 @@ export async function searchStock(query: string) {
 export async function getAllStockData(symbol: string) {
   const normalizedSymbol = symbol.toUpperCase();
 
-  console.log(`📊 Fetching all data for ${normalizedSymbol}...`);
+  // console.log(`📊 Fetching all data for ${normalizedSymbol}...`);
 
   const results = await Promise.allSettled([
     getQuote(normalizedSymbol),

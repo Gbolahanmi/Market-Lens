@@ -41,7 +41,7 @@ export default function NotificationExamples() {
       action: {
         label: "Retry",
         onClick: () => {
-          console.log("Retrying address save...");
+          // console.log("Retrying address save...");
           notify.success("Address saved!", "Your address has been updated");
         },
       },

@@ -1,6 +1,9 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import TradingViewWidget from "@/components/tradingViewWidget";
 import WatchlistButton from "@/components/WatchlistButton";
+import { getUserWatchlist } from "@/lib/actions/watchlist.actions";
 import {
   SYMBOL_INFO_WIDGET_CONFIG,
   CANDLE_CHART_WIDGET_CONFIG,
@@ -11,6 +14,7 @@ import {
   POPULAR_STOCK_SYMBOLS,
 } from "@/lib/constants";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const TRADINGVIEW_WIDGET_URLS = {
   symbolInfo:
@@ -27,55 +31,36 @@ const TRADINGVIEW_WIDGET_URLS = {
     "https://s3.tradingview.com/external-embedding/embed-widget-financials.js",
 };
 
-export default async function StockDetails({
-  params,
-}: {
-  params: Promise<{ symbol: string }>;
-}) {
-  const { symbol: routeSymbol } = await params;
+export default function StockDetails() {
+  const params = useParams();
+  const routeSymbol = params?.symbol as string;
   const decodedSymbol = decodeURIComponent(routeSymbol).toUpperCase();
   const symbol = decodedSymbol.includes(":")
     ? decodedSymbol.split(":").pop() || decodedSymbol
     : decodedSymbol;
 
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkWatchlist = async () => {
+      try {
+        const { data } = await getUserWatchlist();
+        const inWatchlist = data?.some((item) => item.symbol === symbol);
+        setIsInWatchlist(inWatchlist || false);
+      } catch (err) {
+        console.error("Error checking watchlist:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkWatchlist();
+  }, [symbol]);
+
   return (
     <div className="w-full min-h-screen bg-gray-900">
       <div className="container py-8">
-        {/* Header with symbol and watchlist button */}
-        {/* <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-4xl font-bold text-gray-100">
-            {symbol.toUpperCase()}
-          </h1>
-          <WatchlistButton
-            symbol={symbol}
-            company={symbol}
-            isInWatchlist={false}
-            type="button"
-          />
-        </div>
-
-        // Quick Symbol Selector 
-        <div className="mb-8 p-4 bg-gray-800 rounded-lg">
-          <p className="text-gray-300 text-sm font-semibold mb-3">
-            Quick Jump to Symbol:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {POPULAR_STOCK_SYMBOLS.slice(0, 15).map((sym) => (
-              <Link
-                key={sym}
-                href={`/stocks/${sym.toLowerCase()}`}
-                className={`px-3 py-1.5 rounded font-medium transition-colors ${
-                  symbol.toUpperCase() === sym
-                    ? "bg-yellow-500 text-black hover:bg-yellow-400"
-                    : "bg-gray-700 text-gray-100 hover:bg-gray-600"
-                }`}
-              >
-                {sym}
-              </Link>
-            ))}
-          </div>
-        </div> */}
-
         {/* 2-Column Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - 2 columns wide */}
@@ -106,12 +91,13 @@ export default async function StockDetails({
           {/* Right Column */}
           <div className="space-y-6">
             {/* Watchlist Button */}
-            <div /* className="sticky top-20 z-10" */>
+            <div>
               <WatchlistButton
                 symbol={symbol}
                 company={symbol}
-                isInWatchlist={false}
+                isInWatchlist={isInWatchlist}
                 type="button"
+                onUpdate={() => setIsInWatchlist(!isInWatchlist)}
               />
             </div>
 

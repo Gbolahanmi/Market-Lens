@@ -55,7 +55,7 @@ export default function WatchlistButton({
       // Call parent update callback
       onUpdate?.();
     } catch (error) {
-      console.error("❌ Error toggling watchlist:", error);
+      // console.error("❌ Error toggling watchlist:", error);
       notification.error("An unexpected error occurred");
     } finally {
       setLoading(false);
@@ -75,8 +75,8 @@ export default function WatchlistButton({
         }
       >
         {showTrashIcon && inWatchlist ? (
-          <Trash2
-            className="h-5 w-5 text-red-500 hover:text-red-400"
+          <Star
+            className="h-5 w-5 bg-yellow-500 hover:bg-yellow-400"
             fill="currentColor"
           />
         ) : (
