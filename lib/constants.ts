@@ -88,9 +88,7 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
     },
   ],
   support_host:
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    process.env.SUPPORT_HOST ||
-    "http://localhost:3000", // TradingView host - uses env config
+    process.env.BASE_URL || process.env.SUPPORT_HOST || "http://localhost:3000", // TradingView host - uses env config
   backgroundColor: "#141414", // background color
   width: "100%", // full width
   height: 600, // height in px
