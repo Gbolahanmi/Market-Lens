@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { getUserWatchlist } from "@/lib/actions/watchlist.actions";
 import { getNews } from "@/lib/actions/finnhub.actions";
 import { getStockData } from "@/lib/actions/stock-data.actions";
@@ -10,6 +10,11 @@ import AlertSummaryCards from "@/components/watchlist/AlertSummaryCards";
 import NewsCards from "@/components/watchlist/NewsCards";
 import { useNotification } from "@/hooks/useNotification";
 import { useNews } from "@/context/NewsContext";
+import {
+  SkeletonWatchlistTable,
+  SkeletonAlertCards,
+  SkeletonNewsCards,
+} from "@/components/skeletons";
 
 interface WatchlistItem {
   id: string;
@@ -44,11 +49,21 @@ export default function WatchlistPage() {
   const [loading, setLoading] = useState(true);
   const notification = useNotification();
   const { setArticles } = useNews();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const loadWatchlist = useCallback(
     async (options?: { includeNews?: boolean; showLoader?: boolean }) => {
       const includeNews = options?.includeNews ?? false;
       const showLoader = options?.showLoader ?? false;
+
+      // Abort previous request to prevent race conditions
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Create new abort controller for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
 
       if (showLoader) setLoading(true);
 
@@ -70,7 +85,17 @@ export default function WatchlistPage() {
         }
 
         const symbols = items.map((item) => item.symbol);
-        const stockDataArray = await getStockData(symbols);
+
+        // Parallelize stock data and news fetching
+        const [stockDataArray, newsData] = await Promise.all([
+          getStockData(symbols),
+          includeNews ? getNews(symbols) : Promise.resolve(null),
+        ]);
+
+        // Check if this request was aborted (newer request came in)
+        if (abortController.signal.aborted) {
+          return;
+        }
 
         const mergedItems = items.map((item) => {
           const stockData = stockDataArray.find(
@@ -92,8 +117,7 @@ export default function WatchlistPage() {
 
         setWatchlistItems(mergedItems);
 
-        if (includeNews) {
-          const newsData = await getNews(symbols);
+        if (includeNews && newsData) {
           const newsWithIds = (newsData || []).map((article, index) => ({
             ...article,
             id: createArticleId(article, index),
@@ -102,13 +126,20 @@ export default function WatchlistPage() {
           setArticles(newsWithIds);
         }
       } catch (err) {
-        console.error("❌ Error loading watchlist page:", err);
-        notification.error("Failed to load watchlist");
+        // Don't log errors from aborted requests
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error("❌ Error loading watchlist page:", err);
+          if (!abortController.signal.aborted) {
+            notification.error("Failed to load watchlist");
+          }
+        }
       } finally {
-        if (showLoader) setLoading(false);
+        if (showLoader && !abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     },
-    [notification, setArticles],
+    [],
   );
 
   useEffect(() => {
@@ -131,39 +162,69 @@ export default function WatchlistPage() {
           </p>
         </div>
 
-        {/* 2-Column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          {/* Left Column - Table (2 cols wide) */}
-          <div className="lg:col-span-2 overflow-x-auto">
-            <WatchlistTable
-              items={watchlistItems}
-              onUpdate={handleWatchlistUpdate}
-            />
-          </div>
+        {/* Loading State */}
+        {loading ? (
+          <>
+            {/* 2-Column Grid Layout - Skeletons */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+              {/* Left Column - Table Skeleton (2 cols wide) */}
+              <div className="lg:col-span-2 overflow-x-auto">
+                <SkeletonWatchlistTable />
+              </div>
 
-          {/* Right Column - Alert Summary Cards */}
-          <div className="lg:col-span-1">
-            <AlertSummaryCards
-              items={watchlistItems}
-              onUpdate={handleWatchlistUpdate}
-            />
-          </div>
-        </div>
+              {/* Right Column - Alert Summary Skeleton */}
+              <div className="lg:col-span-1">
+                <SkeletonAlertCards />
+              </div>
+            </div>
 
-        {/* News Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-100 mb-6">Market News</h2>
-          <NewsCards news={news} />
-        </div>
+            {/* News Section - Skeleton */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-100 mb-6">
+                Market News
+              </h2>
+              <SkeletonNewsCards />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* 2-Column Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+              {/* Left Column - Table (2 cols wide) */}
+              <div className="lg:col-span-2 overflow-x-auto">
+                <WatchlistTable
+                  items={watchlistItems}
+                  onUpdate={handleWatchlistUpdate}
+                />
+              </div>
 
-        {/* Empty State */}
-        {watchlistItems.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">
-              Your watchlist is empty. Search for stocks to add them to your
-              watchlist.
-            </p>
-          </div>
+              {/* Right Column - Alert Summary Cards */}
+              <div className="lg:col-span-1">
+                <AlertSummaryCards
+                  items={watchlistItems}
+                  onUpdate={handleWatchlistUpdate}
+                />
+              </div>
+            </div>
+
+            {/* News Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-100 mb-6">
+                Market News
+              </h2>
+              <NewsCards news={news} />
+            </div>
+
+            {/* Empty State */}
+            {watchlistItems.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">
+                  Your watchlist is empty. Search for stocks to add them to your
+                  watchlist.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
