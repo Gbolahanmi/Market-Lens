@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import TradingViewWidget from "@/components/tradingViewWidget";
 import WatchlistButton from "@/components/WatchlistButton";
 import { getUserWatchlist } from "@/lib/actions/watchlist.actions";
@@ -41,22 +41,43 @@ export default function StockDetails() {
 
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [loading, setLoading] = useState(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    const checkWatchlist = async () => {
-      try {
-        const { data } = await getUserWatchlist();
-        const inWatchlist = data?.some((item) => item.symbol === symbol);
-        setIsInWatchlist(inWatchlist || false);
-      } catch (err) {
+  const checkWatchlist = useCallback(async () => {
+    // Abort previous request to prevent race conditions
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    setLoading(true);
+    try {
+      const { data } = await getUserWatchlist();
+
+      // Check if this request was aborted
+      if (abortController.signal.aborted) {
+        return;
+      }
+
+      const inWatchlist = data?.some((item) => item.symbol === symbol);
+      setIsInWatchlist(inWatchlist || false);
+    } catch (err) {
+      // Don't log errors from aborted requests
+      if (err instanceof Error && err.name !== "AbortError") {
         console.error("Error checking watchlist:", err);
-      } finally {
+      }
+    } finally {
+      if (!abortController.signal.aborted) {
         setLoading(false);
       }
-    };
-
-    checkWatchlist();
+    }
   }, [symbol]);
+
+  useEffect(() => {
+    void checkWatchlist();
+  }, [symbol, checkWatchlist]);
 
   return (
     <div className="w-full min-h-screen bg-gray-900">
@@ -92,13 +113,17 @@ export default function StockDetails() {
           <div className="space-y-6">
             {/* Watchlist Button */}
             <div>
-              <WatchlistButton
-                symbol={symbol}
-                company={symbol}
-                isInWatchlist={isInWatchlist}
-                type="button"
-                onUpdate={() => setIsInWatchlist(!isInWatchlist)}
-              />
+              {loading ? (
+                <div className="h-10 bg-gray-700 rounded-md animate-pulse" />
+              ) : (
+                <WatchlistButton
+                  symbol={symbol}
+                  company={symbol}
+                  isInWatchlist={isInWatchlist}
+                  type="button"
+                  onUpdate={() => setIsInWatchlist(!isInWatchlist)}
+                />
+              )}
             </div>
 
             {/* Technical Analysis Widget */}
