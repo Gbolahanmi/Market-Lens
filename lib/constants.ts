@@ -41,7 +41,7 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
   colorTheme: "dark", // dark mode
   dateRange: "12M", // last 12 months
   locale: "en", // language
-  largeChartUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`, // route symbol clicks to internal stock details page
+  largeChartUrl: `${process.env.BASE_URL /* || "http://localhost:3000" */}/stocks/{tvsymbol}`, // route symbol clicks to internal stock details page
   isTransparent: true, // makes background transparent
   showFloatingTooltip: true, // show tooltip on hover
   plotLineColorGrowing: "#0FEDBE", // line color when price goes up
@@ -88,7 +88,8 @@ export const MARKET_OVERVIEW_WIDGET_CONFIG = {
     },
   ],
   support_host:
-    process.env.BASE_URL || process.env.SUPPORT_HOST || "http://localhost:3000", // TradingView host - uses env config
+    process.env.BASE_URL ||
+    process.env.SUPPORT_HOST /* || "http://localhost:3000" */, // TradingView host - uses env config
   backgroundColor: "#141414", // background color
   width: "100%", // full width
   height: 600, // height in px
@@ -103,7 +104,7 @@ export const HEATMAP_WIDGET_CONFIG = {
   grouping: "sector",
   isTransparent: true,
   locale: "en",
-  symbolUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`,
+  symbolUrl: `${process.env.BASE_URL /* || "http://localhost:3000" */}/stocks/{tvsymbol}`,
   colorTheme: "dark",
   exchanges: [],
   hasTopBar: false,
@@ -128,7 +129,7 @@ export const TOP_STORIES_WIDGET_CONFIG = {
 
 export const MARKET_DATA_WIDGET_CONFIG = {
   title: "Stocks",
-  largeChartUrl: `${process.env.BASE_URL || "http://localhost:3000"}/stocks/{tvsymbol}`,
+  largeChartUrl: `${process.env.BASE_URL /* || "http://localhost:3000" */}/stocks/{tvsymbol}`,
   width: "100%",
   height: 600,
   locale: "en",

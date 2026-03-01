@@ -30,7 +30,8 @@ export const getAuth = async () => {
       authInstance = betterAuth({
         database: mongodbAdapter(db as Db),
         secret: process.env.BETTER_AUTH_SECRET || "default_secret",
-        baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+        baseURL:
+          process.env.BETTER_AUTH_URL || "https://market-lens-seven.vercel.app",
         emailAndPassword: {
           enabled: true,
           disableSignUp: false,
